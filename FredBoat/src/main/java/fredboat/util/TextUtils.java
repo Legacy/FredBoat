@@ -386,10 +386,22 @@ public class TextUtils {
     }
 
     //put a zero width space between any @ and "here" and "everyone" in the input string
+    //also defuse links, since some people are funny (this method is only used for track titles and effective names of users)
+
+    /**
+     * Defuses some content that Discord couldn't know wasn't our intention.
+     *
+     * <p>When the nickname contains a link, or a mention, the bot encorporates that in the text.
+     * Since Discord can't know the bot didn't mean to do that, we escape it.</p>
+     *
+     * @param input the string to escape, e.g. track titles, nicknames, supplied values
+     * @return
+     */
     @Nonnull
-    public static String defuseMentions(@Nonnull String input) {
+    public static String defuse(@Nonnull String input) {
         return input.replaceAll("@here", "@" + ZERO_WIDTH_CHAR + "here")
-                .replaceAll("@everyone", "@" + ZERO_WIDTH_CHAR + "everyone");
+                .replaceAll("@everyone", "@" + ZERO_WIDTH_CHAR + "everyone")
+                .replaceAll("://", ":" + ZERO_WIDTH_CHAR + "//");
     }
 
     /**
@@ -398,7 +410,7 @@ public class TextUtils {
      */
     @Nonnull
     public static String escapeAndDefuse(@Nonnull String input) {
-        return defuseMentions(escapeMarkdown(input));
+        return defuse(escapeMarkdown(input));
     }
 
     @Nonnull
